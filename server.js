@@ -34,8 +34,10 @@ app.post("/sendMail", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error("MAIL ERROR:", err);
-    res.status(500).json({ success: false });
+  console.error("MAIL ERROR FULL:", err);
+  console.error("MESSAGE:", err.message);
+  console.error("RESPONSE:", err.response);
+  res.status(500).json({ success: false, error: err.message });
   }
 });
 
