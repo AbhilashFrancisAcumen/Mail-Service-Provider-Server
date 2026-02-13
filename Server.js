@@ -4,7 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 const transporter = nodemailer.createTransport({
@@ -21,6 +21,10 @@ app.post("/sendMail", async (req, res) => {
   try {
     const { to, subject, html } = req.body;
 
+    if (!to || !subject || !html) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
     await transporter.sendMail({
       from: `"Acumen Capital" <care@acumengroup.in>`,
       to,
@@ -30,9 +34,12 @@ app.post("/sendMail", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.log(err);
+    console.error("MAIL ERROR:", err);
     res.status(500).json({ success: false });
   }
 });
 
-app.listen(5000, () => console.log("Server running on 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
